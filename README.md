@@ -1,2 +1,2 @@
 # templates
-Holding project for templates repositories
+Holding project for auto-code generator templates repositories
