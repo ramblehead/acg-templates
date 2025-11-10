@@ -25,7 +25,7 @@
         pkgs = import nixpkgs {inherit overlays system;};
         packages = with pkgs; [
           python
-          uvi
+          uv
           # node2nix
           nodejs
           pnpm
