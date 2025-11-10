@@ -23,9 +23,9 @@
           })
         ];
         pkgs = import nixpkgs {inherit overlays system;};
-        pkgs_chromium = import nixpkgs {inherit system;};
         packages = with pkgs; [
           python
+          uvi
           # node2nix
           nodejs
           pnpm

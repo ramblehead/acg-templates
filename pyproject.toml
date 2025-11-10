@@ -1,5 +1,5 @@
-[tool.poetry]
-name = "rh-templates"
+[project]
+name = "acg-templates"
 version = "0.1.0"
 description = "Holding project for templates repositories using auto-code generator"
 authors = ["ramblehead <v.rybynok@gmail.com>"]
@@ -9,7 +9,7 @@ readme = "README.md"
 #   { include = "templates/**/*.py" },
 # ]
 
-requires-python = "~=3.14"
+requires-python = "~=3.14.0"
 
 dependencies = [
  "mako~=1.2.4",
