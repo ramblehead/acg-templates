@@ -1,74 +1,106 @@
 ;; Hey Emacs, this is -*- coding: utf-8 -*-
 
-(require 'blacken)
-(require 'cl)
-(require 'flycheck)
 (require 'hydra)
+(require 'prettier)
+(require 'blacken)
+(require 'flycheck)
 (require 'lsp-mode)
 (require 'lsp-pyright)
-(require 'lsp-ruff-lsp)
+(require 'lsp-ruff)
+(require 'lsp-rust)
 (require 'vterm)
 
-;;; rh-templates common command
-;;; /b/{
+(define-minor-mode acg-templates-mode
+  "acg-templates project-specific minor mode."
+  :lighter " acg-templates")
 
-(defvar rh-templates/build-buffer-name
-  "*rh-templates-build*")
+(add-to-list 'rm-blacklist " acg-templates")
 
-(defun rh-templates/lint ()
-  (interactive)
-  (rh-project-compile
-   "yarn-run app:lint"
-   rh-templates/build-buffer-name))
+(defun acg-templates/lsp-javascript-deps-providers-path (relative-path)
+  (let ((path-hop
+         (expand-file-name
+          (file-name-concat (rh-project-get-root)
+                            "node_modules/.bin" relative-path))))
+    path-hop))
 
-;;; /b/}
+(defun acg-templates/lsp-javascript-setup ()
+  ;; (setq-local lsp-deps-providers (copy-tree lsp-deps-providers))
 
-;;; rh-templates
-;;; /b/{
-
-(defun rh-templates/hydra-define ()
-  (defhydra rh-templates-hydra (:color blue :columns 5)
-    "@rh-templates workspace commands"
-    ("l" rh-templates/lint "lint")))
-
-(rh-templates/hydra-define)
-
-(define-minor-mode rh-templates-mode
-  "rh-templates project-specific minor mode."
-  :lighter " rh-templates"
-  :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "<f9>") #'rh-templates-hydra/body)
-            map))
-
-(add-to-list 'rm-blacklist " rh-templates")
-
-(defun rh-templates/lsp-python-deps-providers-path (path)
-  (file-name-concat (expand-file-name (rh-project-get-root))
-                    ".venv/bin/"
-                    path))
-
-(defun rh-templates/lsp-python-init ()
   (plist-put
    lsp-deps-providers
-   :rh-templates/local-venv
-   (list :path #'rh-templates/lsp-python-deps-providers-path))
+   :acg-templates/local-npm
+   (list :path #'acg-templates/lsp-javascript-deps-providers-path))
+
+  (lsp--require-packages)
+
+  (lsp-dependency 'typescript-language-server
+                  '(:acg-templates/local-npm
+                    "typescript-language-server"))
+
+  (lsp-dependency 'tailwindcss-language-server
+                  '(:acg-templates/local-npm
+                    "tailwindcss-language-server"))
+
+  (lsp-dependency 'typescript
+                  '(:acg-templates/local-npm "tsserver"))
+
+  (add-hook
+   'lsp-after-initialize-hook
+   #'acg-templates/flycheck-add-eslint-next-to-lsp))
+
+(defun acg-templates/flycheck-after-syntax-check-hook-once ()
+  (remove-hook
+   'flycheck-after-syntax-check-hook
+   #'acg-templates/flycheck-after-syntax-check-hook-once
+   t)
+  (flycheck-buffer))
+
+(defun acg-templates/flycheck-add-eslint-next-to-lsp ()
+  (when (seq-contains-p '(js2-mode typescript-mode web-mode) major-mode)
+    (flycheck-add-next-checker 'lsp 'javascript-eslint)))
+
+(defun acg-templates/lsp-python-deps-providers-path (relative-path)
+  (let ((hop-root
+         (expand-file-name
+          (file-name-concat (rh-project-get-root)
+                            ".venv/bin" relative-path)))
+        (project-root
+         (expand-file-name
+          (file-name-concat (rh-project-get-root)
+                            "hop" ".venv/bin" relative-path))))
+    (if (file-exists-p hop-root)
+        hop-root
+      project-root)))
+
+(defun acg-templates/lsp-python-setup ()
+  (plist-put
+   lsp-deps-providers
+   :acg-templates/local-venv
+   (list :path #'acg-templates/lsp-python-deps-providers-path))
 
   (lsp-dependency 'pyright
-                  '(:rh-templates/local-venv "pyright-langserver")))
+                  '(:acg-templates/local-venv
+                    "basedpyright-langserver")))
 
-(eval-after-load 'lsp-pyright #'rh-templates/lsp-python-init)
+(eval-after-load 'lsp-javascript
+  #'acg-templates/lsp-javascript-setup)
 
-(defun rh-templates-setup ()
+(eval-after-load 'lsp-pyright
+  #'acg-templates/lsp-python-setup)
+
+(defun acg-templates-setup ()
   (when buffer-file-name
-    (let ((project-root (rh-project-get-root))
-          file-rpath ext-js)
-      (when project-root
-        (setq file-rpath (expand-file-name buffer-file-name project-root))
-        (cond
+    (let ((hop-root (expand-file-name (rh-project-get-root)))
+          project-root)
+      (when hop-root
+        (setq project-root (file-name-concat hop-root "hop"))
 
-         ;; Python
-         ((or (setq ext-js (string-match-p
-                            (concat "\\.py\\'\\|\\.pyi\\'") file-rpath))
+        (cond
+         ;; This is required as tsserver does not work with files in archives
+         ((bound-and-true-p archive-subfile-mode)
+          (company-mode 1))
+
+         ((or (string-match-p "\\.py\\'\\|\\.pyi\\'" buffer-file-name)
               (string-match-p "^#!.*python"
                               (or (save-excursion
                                     (goto-char (point-min))
@@ -78,11 +110,21 @@
           ;;; /b/; pyright-lsp config
           ;;; /b/{
 
+          ;; (lsp-workspace-folders-add project-root)
+          ;; Adding additional project-root non-persistent
+          (cl-pushnew (lsp-f-canonical project-root)
+                      (lsp-session-folders (lsp-session)) :test 'equal)
+
+          ;; (setq-local lsp-pyright-venv-path project-root)
+          ;; (setq-local lsp-pyright-venv-directory ".venv")
+
           (setq-local lsp-pyright-prefer-remote-env nil)
+          (setq-local lsp-pyright-langserver-command "basedpyright")
           (setq-local lsp-pyright-python-executable-cmd
                       (file-name-concat project-root ".venv/bin/python"))
-          (setq-local lsp-pyright-venv-path
-                      (file-name-concat project-root ".venv"))
+
+          ;; (setq-local lsp-pyright-venv-path
+          ;;             (file-name-concat project-root ".venv"))
           ;; (setq-local lsp-pyright-python-executable-cmd "poetry run python")
           ;; (setq-local lsp-pyright-langserver-command-args
           ;;             `(,(file-name-concat project-root ".venv/bin/pyright")
@@ -95,12 +137,11 @@
           ;;; /b/; ruff-lsp config
           ;;; /b/{
 
-          (setq-local lsp-ruff-lsp-server-command
-                      `(,(file-name-concat project-root ".venv/bin/ruff-lsp")))
-          (setq-local lsp-ruff-lsp-python-path
+          (setq-local lsp-ruff-server-command
+                      `(,(file-name-concat project-root ".venv/bin/ruff")
+                        "server"))
+          (setq-local lsp-ruff-python-path
                       (file-name-concat project-root ".venv/bin/python"))
-          (setq-local lsp-ruff-lsp-ruff-path
-                      `[,(file-name-concat project-root ".venv/bin/ruff")])
 
           ;;; /b/}
 
@@ -112,11 +153,59 @@
 
           ;;; /b/}
 
-          (setq-local lsp-enabled-clients '(pyright ruff-lsp))
+          (setq-local lsp-enabled-clients '(pyright ruff))
+          ;; (setq-local lsp-enabled-clients '(pyright))
+          ;; (setq-local lsp-enabled-clients '(ruff))
           (setq-local lsp-before-save-edits nil)
           (setq-local lsp-modeline-diagnostics-enable nil)
 
           (blacken-mode 1)
-          (lsp-deferred)))))))
+          ;; (run-with-idle-timer 0 nil #'lsp)
+          (lsp-deferred))
+
+         ((string-match-p "\\.rs\\'" buffer-file-name)
+
+          ;;; /b/; rustfmt config
+          ;;; /b/{
+
+          (setq-local rust-format-on-save t)
+
+          ;;; /b/}
+
+          ;;; /b/; LSP config
+          ;;; /b/{
+
+          (setq-local lsp-rust-analyzer-cargo-watch-command "clippy")
+          (setq-local lsp-rust-clippy-preference "on")
+
+          (let ((lsp-rust-analyzer-linked-projects-copy
+                 (seq-copy lsp-rust-analyzer-linked-projects)))
+            (setq-local
+             lsp-rust-analyzer-linked-projects
+             (seq-concatenate
+              'vector
+              lsp-rust-analyzer-linked-projects-copy
+              (vector (file-name-concat
+                       project-root
+                       "external/qkd-declarations-core/Cargo.toml")))))
+
+          ;;; /b/}
+
+          (lsp-deferred))
+
+         ((string-match-p "\\.toml\\'" buffer-file-name)
+          (prettier-mode 1))
+
+         ((string-match-p "\\.json\\'" buffer-file-name)
+          (prettier-mode 1))
+
+         ((string-match-p "\\.yml\\'\\|\\.yaml\\'" buffer-file-name)
+          (prettier-mode 1))
+
+         ((string-match-p "\\.js\\'" buffer-file-name)
+          (prettier-mode 1))
+
+         ((string-match-p "\\.md\\'" buffer-file-name)
+          (prettier-mode 1)))))))
 
 ;;; /b/}
