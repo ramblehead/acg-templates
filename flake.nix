@@ -1,0 +1,75 @@
+{
+  description = "A Nix-flake-based Python development environment";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+  };
+
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    pre-commit-hooks,
+  }:
+    flake-utils.lib.eachDefaultSystem (
+      system: let
+        overlays = [
+          (final: prev: rec {
+            python = prev.python314;
+            nodejs = prev.nodejs_24;
+            pnpm = prev.nodePackages.pnpm;
+            yarn = prev.yarn.override {inherit nodejs;};
+          })
+        ];
+        pkgs = import nixpkgs {inherit overlays system;};
+        pkgs_chromium = import nixpkgs {inherit system;};
+        packages = with pkgs; [
+          python
+          # node2nix
+          nodejs
+          pnpm
+          yarn
+
+          git
+          typos
+          alejandra
+        ];
+      in {
+        checks = {
+          pre-commit-check = pre-commit-hooks.lib.${system}.run {
+            src = ./.;
+            hooks = {
+              typos = {
+                enable = true; # Source code spell checker
+                settings = {
+                  write = true; # Automatically fix typos
+                  ignored-words = [];
+                };
+              };
+              # prettier = {
+              #   enable = true; # Markdown & TS formatter & etc.
+              #   settings = {
+              #     write = true; # Automatically format files
+              #     binPath = "yarn prettier";
+              #     configPath = "./prettier.config.js";
+              #   };
+              # };
+              alejandra.enable = true; # Nix linter & formatter
+            };
+          };
+        };
+
+        devShells.default = pkgs.mkShell {
+          inherit packages;
+
+          shellHook = ''
+            echo "python `${pkgs.python}/bin/python --version`"
+            echo "node `${pkgs.nodejs}/bin/node --version`"
+            ${self.checks.${system}.pre-commit-check.shellHook}
+          '';
+        };
+      }
+    );
+}
