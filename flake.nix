@@ -64,8 +64,8 @@
           inherit packages;
 
           shellHook = ''
-            echo "python `${pkgs.python}/bin/python --version`"
-            echo "node `${pkgs.nodejs}/bin/node --version`"
+            echo "`${pkgs.python}/bin/python --version`"
+            echo "Node.js `${pkgs.nodejs}/bin/node --version`"
             ${self.checks.${system}.pre-commit-check.shellHook}
           '';
         };
