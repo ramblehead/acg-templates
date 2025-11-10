@@ -19,7 +19,6 @@
           (final: prev: rec {
             python = prev.python314;
             nodejs = prev.nodejs_24;
-            pnpm = prev.nodePackages.pnpm;
             yarn = prev.yarn.override {inherit nodejs;};
           })
         ];
