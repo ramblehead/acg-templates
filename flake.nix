@@ -21,13 +21,35 @@
             nodejs = prev.nodejs_24;
           })
         ];
+
         pkgs = import nixpkgs {inherit overlays system;};
-        packages = with pkgs; [
+
+        runtimePackages = with pkgs; [
           python
           uv
           git
           typos
           alejandra
+        ];
+
+        runtimeLibs = with pkgs; [
+          stdenv.cc.cc
+          # stdenv.cc.cc.lib # libstdc++, libgcc_s
+          # glibc # libc, ld-linux, …
+          # zlib
+          # openssl
+          # libuuid
+          # curl
+          # icu
+          # libffi
+          # expat
+          # bzip2
+          # xz
+          # # lzma
+          # attr
+          # acl
+          # libxcrypt
+          # Add more if you hit a missing .so (see `ldd` later)
         ];
       in {
         checks = {
@@ -46,12 +68,22 @@
           };
         };
 
-        devShells.default = pkgs.mkShell {
-          inherit packages;
+        devShells.default = pkgs.mkShell rec {
+          packages = runtimePackages;
+
+          NIX_LD =
+            pkgs.lib.strings.trim
+            (builtins.readFile "${pkgs.stdenv.cc}/nix-support/dynamic-linker");
+
+          NIX_LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
+          LD_LIBRARY_PATH = NIX_LD_LIBRARY_PATH;
 
           shellHook = ''
-            echo "`${pkgs.python}/bin/python --version`"
-            # echo "Node.js `${pkgs.nodejs}/bin/node --version`"
+            echo "Setting up Python environment..."
+
+            echo "Using NIX_LD=$NIX_LD"
+            echo "''$(${pkgs.python}/bin/python --version)"
+
             ${self.checks.${system}.pre-commit-check.shellHook}
           '';
         };

@@ -90,11 +90,8 @@
 
 (defun acg-templates-setup ()
   (when buffer-file-name
-    (let ((hop-root (expand-file-name (rh-project-get-root)))
-          project-root)
-      (when hop-root
-        (setq project-root (file-name-concat hop-root "hop"))
-
+    (let ((project-root (expand-file-name (rh-project-get-root))))
+      (when project-root
         (cond
          ;; This is required as tsserver does not work with files in archives
          ((bound-and-true-p archive-subfile-mode)

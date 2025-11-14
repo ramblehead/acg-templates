@@ -29,9 +29,9 @@ dev = [
 ]
 
 [tool.ruff]
-select = ["ALL"]
+lint.select = ["ALL"]
 
-ignore = [
+lint.ignore = [
   # No need
   "DJ",    # flake8-django
   "UP009", # UTF-8 encoding declaration is unnecessary
