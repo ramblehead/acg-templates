@@ -16,21 +16,15 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         overlays = [
-          (final: prev: rec {
+          (final: prev: {
             python = prev.python314;
             nodejs = prev.nodejs_24;
-            yarn = prev.yarn.override {inherit nodejs;};
           })
         ];
         pkgs = import nixpkgs {inherit overlays system;};
         packages = with pkgs; [
           python
           uv
-          # node2nix
-          nodejs
-          pnpm
-          yarn
-
           git
           typos
           alejandra
@@ -47,14 +41,6 @@
                   ignored-words = [];
                 };
               };
-              # prettier = {
-              #   enable = true; # Markdown & TS formatter & etc.
-              #   settings = {
-              #     write = true; # Automatically format files
-              #     binPath = "yarn prettier";
-              #     configPath = "./prettier.config.js";
-              #   };
-              # };
               alejandra.enable = true; # Nix linter & formatter
             };
           };
@@ -65,7 +51,7 @@
 
           shellHook = ''
             echo "`${pkgs.python}/bin/python --version`"
-            echo "Node.js `${pkgs.nodejs}/bin/node --version`"
+            # echo "Node.js `${pkgs.nodejs}/bin/node --version`"
             ${self.checks.${system}.pre-commit-check.shellHook}
           '';
         };

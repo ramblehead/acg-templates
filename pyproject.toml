@@ -2,14 +2,16 @@
 name = "acg-templates"
 version = "0.1.0"
 description = "Holding project for templates repositories using auto-code generator"
-authors = ["ramblehead <v.rybynok@gmail.com>"]
+authors = [
+  {name = "ramblehead", email = "<v.rybynok@gmail.com>"},
+]
 readme = "README.md"
-# packages = [
-#   { include = "poetry_utils", from = "utils" },
-#   { include = "templates/**/*.py" },
-# ]
 
 requires-python = "~=3.14.0"
+
+[tool.uv.build-backend]
+module-name = "templates"
+module-root = ""
 
 dependencies = [
  "mako~=1.2.4",

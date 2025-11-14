@@ -1,0 +1,2 @@
+[default.extend-identifiers]
+allowIIFEs = "allowIIFEs"  # Allow "IFEs" as a valid word
