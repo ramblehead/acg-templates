@@ -79,10 +79,8 @@
           LD_LIBRARY_PATH = NIX_LD_LIBRARY_PATH;
 
           shellHook = ''
-            echo "Setting up Python environment..."
-
-            echo "Using NIX_LD=$NIX_LD"
             echo "''$(${pkgs.python}/bin/python --version)"
+            echo "Using NIX_LD=$NIX_LD"
 
             ${self.checks.${system}.pre-commit-check.shellHook}
           '';
