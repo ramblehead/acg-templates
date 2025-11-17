@@ -7,3 +7,6 @@
 [submodule "templates/templates-leetcode-cpp"]
 	path = templates/templates-leetcode-cpp
 	url = git@github.com:ramblehead/templates-leetcode-cpp.git
+[submodule "autocodegen"]
+	path = autocodegen
+	url = git@github.com:ramblehead/autocodegen.git
