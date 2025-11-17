@@ -73,5 +73,5 @@ extend-exclude = [
 line-length = 79
 
 [build-system]
-requires = ["uv_build>=0.8.17,<0.9.0"]
+requires = ["uv_build>=0.9.10,<0.10.0"]
 build-backend = "uv_build"
