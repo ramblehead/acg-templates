@@ -7,18 +7,24 @@ authors = [
 ]
 readme = "README.md"
 
-requires-python = "~=3.14.0"
+requires-python = "==3.14.*"
+
+dependencies = [
+  "mako~=1.2.4",
+  "autocodegen",
+]
+
+[tool.uv.sources]
+autocodegen = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    "autocodegen",
+]
 
 [tool.uv.build-backend]
 module-name = "templates"
 module-root = ""
-
-dependencies = [
- "mako~=1.2.4",
-]
-
-# [project.scripts]
-# lint = "poetry_utils.scripts:lint"
 
 [dependency-groups]
 dev = [
