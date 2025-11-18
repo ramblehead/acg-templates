@@ -2,27 +2,20 @@
 name = "acg-templates"
 version = "0.0.1"
 description = "Holding project for templates repositories using auto-code generator"
-authors = [
-  {name = "ramblehead", email = "<v.rybynok@gmail.com>"},
-]
+authors = [{ name = "ramblehead", email = "<v.rybynok@gmail.com>" }]
 readme = "README.md"
 
 classifiers = ["Private :: Do Not Upload"]
 
 requires-python = "==3.14.*"
 
-dependencies = [
-  "mako~=1.2.4",
-  "autocodegen",
-]
+dependencies = ["mako~=1.2.4", "autocodegen"]
 
 [tool.uv.sources]
 autocodegen = { workspace = true }
 
 [tool.uv.workspace]
-members = [
-    "autocodegen",
-]
+members = ["autocodegen"]
 
 [tool.uv.build-backend]
 module-name = "templates"
@@ -61,10 +54,7 @@ lint.ignore = [
 
 line-length = 110
 
-extend-exclude = [
-  "**/__pycache__",
-  "**/.*",
-]
+extend-exclude = ["**/__pycache__", "**/.*"]
 
 # [tool.ruff.extend-per-file-ignores]
 # "templates/*/rh-template/**.*" = [

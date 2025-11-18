@@ -1,10 +1,7 @@
 {
   "include": ["templates"],
 
-  "exclude": [
-    "**/__pycache__",
-    "**/.*"
-  ],
+  "exclude": ["**/__pycache__", "**/.*"],
 
   "useLibraryCodeForTypes": true,
   "typeCheckingMode": "strict",
