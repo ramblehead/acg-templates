@@ -10,7 +10,7 @@ members = [
 
 [[package]]
 name = "acg-templates"
-version = "0.1.0"
+version = "0.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "autocodegen" },
@@ -50,7 +50,7 @@ wheels = [
 
 [[package]]
 name = "autocodegen"
-version = "0.1.0"
+version = "0.0.1"
 source = { editable = "autocodegen" }
 
 [package.dev-dependencies]
