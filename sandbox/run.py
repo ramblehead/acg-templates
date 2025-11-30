@@ -11,12 +11,13 @@ if __name__ == "__main__":
     project_parent = spath.parent.resolve(strict=True)
     project_root = project_parent / project_name
 
-    project_root.mkdir()
+    project_root.mkdir(exist_ok=True)
+    acg_root = (project_parent.parent / "templates").resolve(strict=True)
 
     config = Config(
         project_name=project_name,
         project_root=project_root,
-        acg_root=project_parent / "../hop/templates" / project_name,
+        acg_root=acg_root,
     )
 
-    generate("poetry-pyside-starter", config)
+    generate(project_name, config)
