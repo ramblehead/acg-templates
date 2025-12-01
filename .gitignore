@@ -11,8 +11,3 @@ __pycache__/
 *$py.class
 
 .ruff_cache/
-
-# acg
-
-/sandbox
-!/sandbox/*.py
