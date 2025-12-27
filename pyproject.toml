@@ -42,14 +42,15 @@ lint.ignore = [
   "S607", # Starting a process with a partial executable path
 
   # Should be enabled later when project is more mature
-  # "D", # pydocstyle
+  "D100", # module docstring
+  "D103", # public function docstring
 
   # Should be enabled for releases
   "ERA001", # eradicate (e.g. comments)
   "T20",    # flake8-print
 
   # rh-template dirs should implicit namespace packages
-  # "INP001", # implicit-namespace-package
+  "INP001", # implicit-namespace-package
 ]
 
 line-length = 110
