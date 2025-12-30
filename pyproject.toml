@@ -49,6 +49,8 @@ lint.ignore = [
   "ERA001", # eradicate (e.g. comments)
   "T20",    # flake8-print
 
+  "N999",
+
   # rh-template dirs should implicit namespace packages
   "INP001", # implicit-namespace-package
 ]
