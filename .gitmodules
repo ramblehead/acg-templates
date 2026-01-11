@@ -1,6 +1,3 @@
-[submodule "templates/conan-poetry"]
-	path = templates/conan-poetry
-	url = git@github.com:ramblehead/templates-conan-poetry.git
 [submodule "autocodegen"]
 	path = autocodegen
 	url = git@github.com:ramblehead/autocodegen.git
@@ -13,3 +10,6 @@
 [submodule "templates/cpp/leetcode"]
 	path = templates/cpp/leetcode
 	url = git@github.com:ramblehead/acg--cpp--leetcode.git
+[submodule "templates/cpp/conan2-poetry"]
+	path = templates/cpp/conan2-poetry
+	url = git@github.com:ramblehead/acg--cpp--conan2-poetry.git
