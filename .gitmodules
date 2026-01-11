@@ -10,3 +10,6 @@
 [submodule "autocodegen"]
 	path = autocodegen
 	url = git@github.com:ramblehead/autocodegen.git
+[submodule "templates/nix-hop/poetry-pyside6"]
+	path = templates/nix-hop/poetry-pyside6
+	url = git@github.com:ramblehead/acg--nix-hop--poetry-pyside6.git
