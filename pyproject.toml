@@ -24,7 +24,7 @@ module-root = ""
 [dependency-groups]
 dev = [
   "black~=25.11.0",
-  "basedpyright~=1.34.0",
+  "basedpyright~=1.37.1",
   "ruff~=0.14.7",
   "ruff-lsp~=0.0.62",
 ]
