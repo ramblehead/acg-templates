@@ -10,9 +10,9 @@
 [submodule "templates/cpp/conan2-poetry"]
 	path = templates/cpp/conan2-poetry
 	url = git@github.com:ramblehead/acg--cpp--conan2-poetry.git
+[submodule "templates/hop-nix/python/poetry-pyside6"]
+	path = templates/hop-nix/python/poetry-pyside6
+	url = git@github.com:ramblehead/acg--hop-nix--python--poetry-pyside6.git
 [submodule "templates/hop-nix/cpp/clang20"]
 	path = templates/hop-nix/cpp/clang20
 	url = git@github.com:ramblehead/acg--hop-nix--cpp--clang20.git
-[submodule "templates/hop-nix/python/templates/hop-nix/python/poetry-pyside6"]
-	path = templates/hop-nix/python/templates/hop-nix/python/poetry-pyside6
-	url = git@github.com:ramblehead/acg--hop-nix--python--poetry-pyside6.git
