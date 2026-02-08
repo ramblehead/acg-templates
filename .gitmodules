@@ -4,9 +4,6 @@
 [submodule "templates/python/poetry-pyside6"]
 	path = templates/python/poetry-pyside6
 	url = git@github.com:ramblehead/acg--python--poetry-pyside6.git
-[submodule "templates/cpp/leetcode"]
-	path = templates/cpp/leetcode
-	url = git@github.com:ramblehead/acg--cpp--leetcode.git
 [submodule "templates/cpp/conan2-poetry"]
 	path = templates/cpp/conan2-poetry
 	url = git@github.com:ramblehead/acg--cpp--conan2-poetry.git
